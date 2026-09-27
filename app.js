@@ -1,56 +1,16 @@
-const people=[
-  {name:'Zendaya',meta:'ACTOR · USA',query:'Zendaya'},
-  {name:'Margot Robbie',meta:'ACTOR · AUSTRALIA',query:'Margot Robbie'},
-  {name:'Ana de Armas',meta:'ACTOR · CUBA',query:'Ana de Armas'},
-  {name:'Rihanna',meta:'MUSICIAN · BARBADOS',query:'Rihanna'},
-  {name:'Sydney Sweeney',meta:'ACTOR · USA',query:'Sydney Sweeney'},
-  {name:'Dua Lipa',meta:'MUSICIAN · UK',query:'Dua Lipa'}
-];
+const people=[{name:'Zendaya',meta:'Actor · USA',query:'Zendaya'},{name:'Margot Robbie',meta:'Actor · Australia',query:'Margot Robbie'},{name:'Ana de Armas',meta:'Actor · Cuba',query:'Ana de Armas'},{name:'Rihanna',meta:'Musician · Barbados',query:'Rihanna'},{name:'Sydney Sweeney',meta:'Actor · USA',query:'Sydney Sweeney'},{name:'Dua Lipa',meta:'Musician · UK',query:'Dua Lipa'}];
 const metrics=['Face','Eyes','Body shape','Ass','Boobs','Sex appeal','Perceived personality'];
-let personIndex=0, metricIndex=0, scores=Object.fromEntries(metrics.map(m=>[m,7]));
-let imageCache={};
+let personIndex=0,metricIndex=0,scores=Object.fromEntries(metrics.map(m=>[m,7])),images={};
 const $=s=>document.querySelector(s);
-const ordinal=n=>String(n+1).padStart(2,'0');
-function average(){return metrics.reduce((sum,m)=>sum+scores[m],0)/metrics.length}
-function fallback(){return 'linear-gradient(140deg,#56544d,#171714 49%,#77746d 50%,#292824)'}
-function renderMetric(){
-  const metric=metrics[metricIndex];
-  $('#stepCount').textContent=`${ordinal(metricIndex)} / ${String(metrics.length).padStart(2,'0')}`;
-  $('#metricLabel').textContent=metric.toUpperCase();
-  $('#metricTitle').textContent=metric.toUpperCase();
-  $('#instruction').textContent=`How would you rate her ${metric.toLowerCase()}?`;
-  $('#markValue').textContent=scores[metric];
-  $('#progressBar').style.width=`${((metricIndex+1)/metrics.length)*100}%`;
-  $('#continueText').textContent=metricIndex===metrics.length-1?'REVIEW YOUR SCORE':`NEXT: ${metrics[metricIndex+1].toUpperCase()}`;
-}
-async function getImage(query){
-  if(imageCache[query])return imageCache[query];
-  try{const r=await fetch(`https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrnamespace=6&gsrlimit=10&prop=imageinfo&iiprop=url&iiurlwidth=1000&format=json&origin=*`);const d=await r.json();const src=Object.values(d.query?.pages||{}).map(p=>p.imageinfo?.[0]?.thumburl||p.imageinfo?.[0]?.url).find(Boolean);if(src){imageCache[query]=src;return src}}catch(e){console.warn(e)}return '';
-}
-async function renderPerson(){
-  const person=people[personIndex], image=$('#portraitImage');
-  image.style.opacity=0;
-  $('#celebrityName').textContent=person.name;$('#celebrityMeta').textContent=person.meta;
-  renderMetric();
-  const src=await getImage(person.query);if(people[personIndex]!==person)return;
-  person.image=src;image.style.backgroundImage=src?`url("${src}")`:fallback();image.style.opacity=1;
-}
-function changeScore(delta){const key=metrics[metricIndex];scores[key]=Math.max(1,Math.min(10,scores[key]+delta));renderMetric()}
+function average(){return metrics.reduce((n,m)=>n+scores[m],0)/metrics.length}
+function fallback(){return 'linear-gradient(135deg,#dedee2,#a5a7ae)'}
+function renderSlider(){const s=$('#scoreSlider'),v=scores[metrics[metricIndex]];s.value=v;s.style.setProperty('--score-pct',`${((v-1)/9)*100}%`);$('#markValue').textContent=v;s.setAttribute('aria-label',`${metrics[metricIndex]} score: ${v} out of 10`)}
+function renderMetric(){const m=metrics[metricIndex];$('#stepCount').textContent=`${metricIndex+1} of ${metrics.length}`;$('#metricNumber').textContent=`${String(metricIndex+1).padStart(2,'0')} · RATING`;$('#rateTitle').textContent=m;$('#rateQuestion').textContent=`What’s your rating for her ${m.toLowerCase()}?`;$('#progressBar').style.width=`${((metricIndex+1)/metrics.length)*100}%`;$('#continueButton').firstChild.textContent=metricIndex===metrics.length-1?'Review rating ':'Next ';renderSlider()}
+async function fetchImage(query){if(images[query])return images[query];try{const r=await fetch(`https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrnamespace=6&gsrlimit=10&prop=imageinfo&iiprop=url&iiurlwidth=1000&format=json&origin=*`);const d=await r.json();const url=Object.values(d.query?.pages||{}).map(x=>x.imageinfo?.[0]?.thumburl||x.imageinfo?.[0]?.url).find(Boolean);if(url){images[query]=url;return url}}catch(e){console.warn(e)}return ''}
+async function renderPerson(){const p=people[personIndex],el=$('#portraitImage');el.style.opacity=0;$('#celebrityName').textContent=p.name;$('#celebrityMeta').textContent=p.meta;$('#startRating').firstChild.textContent=`Rate ${p.name} `;const src=await fetchImage(p.query);if(people[personIndex]!==p)return;p.image=src;el.style.backgroundImage=src?`url("${src}")`:fallback();el.style.opacity=1;$('#imageStatus').textContent=src?'Wikimedia Commons image':'Image unavailable'}
 function getRatings(){return JSON.parse(localStorage.getItem('velvet-score-ratings')||'[]')}
-function setRatings(items){localStorage.setItem('velvet-score-ratings',JSON.stringify(items))}
-function renderReview(){
- const person=people[personIndex];$('#reviewName').textContent=person.name;$('#reviewOverall').textContent=average().toFixed(1);
- $('#reviewList').innerHTML=metrics.map((m,i)=>`<div class="review-row"><button data-edit="${i}"><span>${ordinal(i)}</span>${m}</button><strong>${scores[m]}</strong></div>`).join('');
- document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{metricIndex=Number(b.dataset.edit);showView('rate');renderMetric()}));
-}
-function fileScore(){const p=people[personIndex];const list=getRatings().filter(x=>x.name!==p.name);list.push({name:p.name,meta:p.meta,image:p.image||'',score:Number(average().toFixed(1)),metrics:{...scores},updatedAt:new Date().toISOString()});setRatings(list);toast('SCORE FILED');personIndex=(personIndex+1)%people.length;metricIndex=0;scores=Object.fromEntries(metrics.map(m=>[m,7]));showView('rate');renderPerson()}
-function renderBoard(){const list=getRatings().sort((a,b)=>b.score-a.score);$('#ratedCount').textContent=list.length;$('#averageScore').textContent=list.length?(list.reduce((s,r)=>s+r.score,0)/list.length).toFixed(1):'—';$('#emptyBoard').style.display=list.length?'none':'block';$('#leaderboard').innerHTML=list.map((r,i)=>`<article class="leader-row"><span class="rank">${ordinal(i)}</span><div class="thumb" style="${r.image?`background-image:url('${r.image}')`:'background:linear-gradient(140deg,#56544d,#171714)'}"></div><div><div class="leader-name">${r.name}</div><div class="leader-meta">FILED ${new Date(r.updatedAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short'}).toUpperCase()}</div></div><strong class="leader-score">${r.score}</strong></article>`).join('')}
-function showView(name){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));$(`#${name}View`).classList.add('active');if(name==='board')renderBoard();if(name==='review')renderReview();window.scrollTo({top:0,behavior:'instant'})}
+function renderReview(){const p=people[personIndex];$('#reviewName').textContent=p.name;$('#reviewOverall').textContent=average().toFixed(1);$('#reviewList').innerHTML=metrics.map((m,i)=>`<div class="review-row"><button data-edit="${i}"><span>${String(i+1).padStart(2,'0')}</span>${m}</button><strong>${scores[m]}/10</strong></div>`).join('');document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{metricIndex=Number(b.dataset.edit);showView('rate');renderMetric()}))}
+function renderBoard(){const list=getRatings().sort((a,b)=>b.score-a.score);$('#ratedCount').textContent=list.length;$('#averageScore').textContent=list.length?(list.reduce((n,x)=>n+x.score,0)/list.length).toFixed(1):'—';$('#emptyBoard').style.display=list.length?'none':'block';$('#leaderboard').innerHTML=list.map((x,i)=>`<article class="leader-row"><span class="rank">${String(i+1).padStart(2,'0')}</span><div class="thumb" style="${x.image?`background-image:url('${x.image}')`:`background:${fallback()}`}"></div><div><div class="leader-name">${x.name}</div><div class="leader-meta">Updated ${new Date(x.updatedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</div></div><strong class="leader-score">${x.score}</strong></article>`).join('')}
+function showView(name){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));$(`#${name}View`).classList.add('active');if(name==='review')renderReview();if(name==='board')renderBoard();window.scrollTo(0,0)}
 function toast(text){const t=$('#toast');t.textContent=text;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1900)}
-$('#decrease').addEventListener('click',()=>changeScore(-1));$('#increase').addEventListener('click',()=>changeScore(1));
-$('#continueButton').addEventListener('click',()=>{if(metricIndex===metrics.length-1)showView('review');else{metricIndex++;renderMetric()}});
-$('#skipSubject').addEventListener('click',()=>{personIndex=(personIndex+1)%people.length;metricIndex=0;scores=Object.fromEntries(metrics.map(m=>[m,7]));renderPerson()});
-$('#fileScore').addEventListener('click',fileScore);$('#infoButton').addEventListener('click',()=>showView('about'));
-document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.go)));
-$('#clearBoard').addEventListener('click',()=>{if(confirm('Clear your private index from this device?')){localStorage.removeItem('velvet-score-ratings');renderBoard();toast('INDEX CLEARED')}});
-renderPerson();
+$('#startRating').addEventListener('click',()=>{metricIndex=0;showView('rate');renderMetric()});$('#backToDiscover').addEventListener('click',()=>showView('discover'));$('#skipMetric').addEventListener('click',()=>{scores[metrics[metricIndex]]=7;if(metricIndex===metrics.length-1)showView('review');else{metricIndex++;renderMetric()}});$('#scoreSlider').addEventListener('input',e=>{scores[metrics[metricIndex]]=Number(e.target.value);renderSlider()});$('#continueButton').addEventListener('click',()=>{if(metricIndex===metrics.length-1)showView('review');else{metricIndex++;renderMetric()}});$('#skipSubject').addEventListener('click',()=>{personIndex=(personIndex+1)%people.length;metricIndex=0;scores=Object.fromEntries(metrics.map(m=>[m,7]));renderPerson()});$('#fileScore').addEventListener('click',()=>{const p=people[personIndex],list=getRatings().filter(x=>x.name!==p.name);list.push({name:p.name,meta:p.meta,image:p.image||'',score:Number(average().toFixed(1)),metrics:{...scores},updatedAt:new Date().toISOString()});localStorage.setItem('velvet-score-ratings',JSON.stringify(list));toast('Rating saved');personIndex=(personIndex+1)%people.length;metricIndex=0;scores=Object.fromEntries(metrics.map(m=>[m,7]));showView('discover');renderPerson()});document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.go)));$('#clearBoard').addEventListener('click',()=>{if(confirm('Clear all private ratings?')){localStorage.removeItem('velvet-score-ratings');renderBoard();toast('Ratings cleared')}});renderPerson();

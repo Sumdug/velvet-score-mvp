@@ -3,66 +3,52 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#12110f" />
-  <meta name="description" content="Velvet Score — a private celebrity rating prototype." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet" />
+  <meta name="theme-color" content="#f7f7f8" />
+  <meta name="description" content="Scorebook — a private celebrity rating prototype." />
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="styles.css?v=mobile-flow-20260927" />
-  <title>Velvet Score</title>
+  <link rel="stylesheet" href="styles.css?v=scorebook-1" />
+  <title>Scorebook</title>
 </head>
 <body>
   <main class="app-shell">
-    <section id="rateView" class="view active" aria-labelledby="metricTitle">
-      <header class="rate-head">
-        <button class="brand-button" id="infoButton" aria-label="About Velvet Score">V</button>
-        <div class="step-label"><span id="stepCount">01 / 07</span><span id="metricLabel">FACE</span></div>
-        <button class="index-button" data-go="board" aria-label="Open private index">INDEX</button>
-      </header>
-
-      <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
-      <section class="portrait-stage" aria-label="Current adult celebrity">
+    <section id="discoverView" class="view active" aria-labelledby="discoverTitle">
+      <header class="nav-bar"><h1 id="discoverTitle">Discover</h1><button class="nav-text" data-go="board">My ratings</button></header>
+      <section class="subject-card">
         <div class="portrait-image" id="portraitImage" role="img" aria-label="Celebrity portrait"></div>
-        <div class="portrait-scrim"></div>
-        <div class="subject-meta"><p id="celebrityMeta">ACTOR · USA</p><h1 id="celebrityName">Zendaya</h1></div>
-        <button id="skipSubject" class="skip-subject">SKIP <span>↗</span></button>
+        <div class="image-status" id="imageStatus">Loading image</div>
+        <div class="subject-info"><div><h2 id="celebrityName">Zendaya</h2><p id="celebrityMeta">Actor · USA</p></div><button class="more-button" id="skipSubject" aria-label="Show another celebrity">•••</button></div>
       </section>
+      <section class="intro-block"><p class="section-label">PRIVATE RATING</p><h2>Rate the details.<br>Keep the record.</h2><p>Seven quick marks, saved only on this device.</p></section>
+      <button class="primary-action" id="startRating">Rate Zendaya <span>→</span></button>
+    </section>
 
-      <section class="rating-dock">
-        <p class="instruction" id="instruction">How would you rate her face?</p>
-        <h2 id="metricTitle">FACE</h2>
-        <div class="mark-control" aria-label="Face score">
-          <button class="adjust-button" id="decrease" aria-label="Decrease score">−</button>
-          <output id="markValue" aria-live="polite">7</output>
-          <button class="adjust-button" id="increase" aria-label="Increase score">+</button>
-        </div>
-        <div class="mark-scale" aria-hidden="true"><span>LOW</span><i></i><span>HIGH</span></div>
-        <button class="continue-button" id="continueButton"><span id="continueText">NEXT: EYES</span><span>→</span></button>
+    <section id="rateView" class="view" aria-labelledby="rateTitle">
+      <header class="nav-bar"><button class="nav-text left" id="backToDiscover">Cancel</button><span class="nav-centre" id="stepCount">1 of 7</span><button class="nav-text" id="skipMetric">Skip</button></header>
+      <div class="rating-progress"><span id="progressBar"></span></div>
+      <section class="rating-content"><p class="section-label" id="metricNumber">01 · RATING</p><h1 id="rateTitle">Face</h1><p id="rateQuestion">What’s your rating for her face?</p>
+        <div class="score-display"><output id="markValue">7</output><span>/ 10</span></div>
+        <input id="scoreSlider" class="score-slider" type="range" min="1" max="10" value="7" aria-label="Face score from 1 to 10" />
+        <div class="slider-labels"><span>1 · LOW</span><span>10 · HIGH</span></div>
       </section>
+      <div class="bottom-action"><button class="primary-action" id="continueButton">Next <span>→</span></button></div>
     </section>
 
     <section id="reviewView" class="view" aria-labelledby="reviewTitle">
-      <header class="rate-head"><button class="brand-button" data-go="rate">V</button><div class="step-label"><span>07 / 07</span><span>REVIEW</span></div><button class="index-button" data-go="board">INDEX</button></header>
-      <section class="review-hero"><span>YOUR MARK FOR</span><h1 id="reviewName">Zendaya</h1><strong id="reviewOverall">7.0</strong><small>OVERALL / 10</small></section>
+      <header class="nav-bar"><button class="nav-text left" data-go="rate">Back</button><h1>Review</h1><span class="nav-spacer"></span></header>
+      <section class="score-summary"><p class="section-label">YOUR SCORE FOR</p><h2 id="reviewName">Zendaya</h2><strong id="reviewOverall">7.0</strong><span>overall score</span></section>
       <div class="review-list" id="reviewList"></div>
-      <button class="file-button" id="fileScore"><span>FILE THIS SCORE</span><span>→</span></button>
+      <div class="bottom-action"><button class="primary-action" id="fileScore">Save rating <span>→</span></button></div>
     </section>
 
     <section id="boardView" class="view" aria-labelledby="boardTitle">
-      <header class="rate-head"><button class="brand-button" data-go="rate">V</button><div class="step-label"><span>PRIVATE</span><span>INDEX</span></div><button class="index-button active">INDEX</button></header>
-      <section class="index-hero"><p>PERSONAL ARCHIVE</p><h1 id="boardTitle">Your<br><em>index.</em></h1><div><span>FILES</span><strong id="ratedCount">0</strong><span>MEAN</span><strong id="averageScore">—</strong></div></section>
+      <header class="nav-bar"><h1 id="boardTitle">My ratings</h1><button class="nav-text" data-go="discover">Discover</button></header>
+      <section class="stats"><div><span>RATED</span><strong id="ratedCount">0</strong></div><div><span>AVERAGE</span><strong id="averageScore">—</strong></div></section>
       <div id="leaderboard" class="leaderboard" aria-live="polite"></div>
-      <div id="emptyBoard" class="empty-state"><h2>Nothing<br><em>filed yet.</em></h2><p>One subject. Seven quick marks. A private index.</p><button class="text-action" data-go="rate">START RATING →</button></div>
-      <button id="clearBoard" class="clear-link">CLEAR INDEX</button>
-    </section>
-
-    <section id="aboutView" class="view" aria-labelledby="aboutTitle">
-      <header class="rate-head"><button class="brand-button" data-go="rate">V</button><div class="step-label"><span>PRIVATE</span><span>BY DESIGN</span></div><button class="index-button" data-go="board">INDEX</button></header>
-      <section class="about-copy"><p>VELVET SCORE</p><h1 id="aboutTitle">Your<br><em>point of view.</em></h1><p>Private ratings, kept on this device. The catalogue is restricted to adult public figures. “Perceived personality” refers only to your impression of a public persona.</p><p>Images are retrieved from Wikimedia Commons in this prototype. Image curation and licensing are a proper catalogue concern for the next phase.</p><button class="text-action" data-go="rate">BACK TO RATING →</button></section>
+      <div id="emptyBoard" class="empty-state"><h2>No ratings yet</h2><p>Rate someone in Discover and your private list will show up here.</p><button class="secondary-action" data-go="discover">Discover someone</button></div>
+      <button id="clearBoard" class="clear-button">Clear all ratings</button>
     </section>
   </main>
   <div class="toast" id="toast" role="status"></div>
-  <script src="app.js?v=mobile-flow-20260927"></script>
+  <script src="app.js?v=scorebook-1"></script>
 </body>
 </html>
