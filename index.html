@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f7f7f8" />
   <meta name="description" content="Scorebook — a private celebrity rating prototype." />
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="styles.css?v=scorebook-1" />
+  <link rel="stylesheet" href="styles.css?v=scorebook-2" />
   <title>Scorebook</title>
 </head>
 <body>
@@ -47,8 +47,12 @@
       <div id="emptyBoard" class="empty-state"><h2>No ratings yet</h2><p>Rate someone in Discover and your private list will show up here.</p><button class="secondary-action" data-go="discover">Discover someone</button></div>
       <button id="clearBoard" class="clear-button">Clear all ratings</button>
     </section>
+    <nav class="app-tabs" id="appNav" aria-label="Main navigation">
+      <button class="tab active" data-go="discover" data-tab="discover"><span class="tab-icon">✦</span><span>Discover</span></button>
+      <button class="tab" data-go="board" data-tab="board"><span class="tab-icon">▤</span><span>My ratings</span></button>
+    </nav>
   </main>
   <div class="toast" id="toast" role="status"></div>
-  <script src="app.js?v=scorebook-1"></script>
+  <script src="app.js?v=scorebook-2"></script>
 </body>
 </html>
