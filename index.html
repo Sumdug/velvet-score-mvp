@@ -3,52 +3,65 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#100b1f" />
+  <meta name="theme-color" content="#f2efe7" />
   <meta name="description" content="Velvet Score — a private celebrity rating prototype." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="styles.css" />
   <title>Velvet Score</title>
 </head>
 <body>
-  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
   <main class="app-shell">
-    <header class="topbar">
-      <a class="brand" href="#rate" aria-label="Velvet Score home"><span class="brand-mark">V</span><span>VELVET<br><b>SCORE</b></span></a>
-      <button class="icon-button" id="infoButton" aria-label="About this prototype">i</button>
+    <header class="masthead">
+      <a class="wordmark" href="#rate" aria-label="Velvet Score home">VELVET <em>SCORE</em></a>
+      <span class="issue">PRIVATE INDEX<br>NO. 001</span>
+      <button class="info-link" id="infoButton">ABOUT</button>
     </header>
 
     <section id="rateView" class="view active" aria-labelledby="rateTitle">
-      <div class="eyebrow-row"><span class="eyebrow">PRIVATE COLLECTION</span><span id="progressText">01 / 06</span></div>
-      <article class="portrait-card" id="portraitCard">
-        <div class="portrait-image" id="portraitImage" role="img" aria-label="Editorial prototype portrait"></div>
-        <div class="portrait-overlay"></div>
-        <div class="portrait-copy"><p id="celebrityMeta">ACTOR · USA</p><h1 id="rateTitle">Zendaya</h1><button id="nextPortrait" class="text-button">Not this one <span>→</span></button></div>
-        <span class="prototype-tag">PROTOTYPE IMAGE</span>
-      </article>
+      <div class="folio"><span id="progressText">01/06</span><span>DISCOVER</span></div>
+      <div class="feature-grid">
+        <article class="image-stage">
+          <div class="portrait-image" id="portraitImage" role="img" aria-label="Celebrity portrait"></div>
+          <div class="image-source" id="imageSource">COMMONS EDITORIAL IMAGE</div>
+          <button id="nextPortrait" class="skip-link">SKIP SUBJECT <span>↗</span></button>
+        </article>
+        <section class="subject-sheet" aria-label="Current celebrity">
+          <p class="kicker" id="celebrityMeta">ACTOR · USA</p>
+          <h1 id="rateTitle">Zendaya</h1>
+          <p class="descriptor">A private visual appraisal. Your ratings stay on this device.</p>
+          <div class="overall"><span>YOUR CURRENT MARK</span><strong id="scorePreview">7.0</strong><span class="out-of">/10</span></div>
+        </section>
+      </div>
 
-      <section class="rating-panel" aria-label="Rate this celebrity">
-        <div class="panel-title"><div><span class="eyebrow">YOUR TAKE</span><h2>Make it count.</h2></div><span class="score-preview" id="scorePreview">—</span></div>
+      <section class="score-sheet" aria-label="Rating metrics">
+        <div class="sheet-head"><span>SELECT A MARK</span><span>01 — 10</span></div>
         <div class="metrics" id="metrics"></div>
-        <button class="primary-button" id="saveRating"><span>Save your score</span><span class="button-arrow">→</span></button>
+        <button class="save-button" id="saveRating"><span>FILE THIS SCORE</span><span>→</span></button>
       </section>
     </section>
 
     <section id="boardView" class="view" aria-labelledby="boardTitle">
-      <div class="board-heading"><div><span class="eyebrow">YOUR PRIVATE ARCHIVE</span><h1 id="boardTitle">The scoreboard</h1></div><button id="clearBoard" class="clear-button">Clear</button></div>
-      <div class="board-summary"><span>RATED</span><strong id="ratedCount">0</strong><span>AVERAGE</span><strong id="averageScore">—</strong></div>
+      <div class="folio"><span>ARCHIVE</span><span>RANKED BY YOU</span></div>
+      <div class="archive-title"><h1 id="boardTitle">THE<br><em>INDEX</em></h1><p>Every saved appraisal, ranked from highest mark down.</p></div>
+      <div class="archive-stats"><div><span>FILES</span><strong id="ratedCount">0</strong></div><div><span>MEAN</span><strong id="averageScore">—</strong></div></div>
       <div id="leaderboard" class="leaderboard" aria-live="polite"></div>
-      <div id="emptyBoard" class="empty-state"><span class="empty-mark">V</span><h2>Your list starts here.</h2><p>Rate someone in Discover and your private leaderboard will appear.</p><button class="secondary-button" data-go="rate">Discover someone</button></div>
+      <div id="emptyBoard" class="empty-state"><h2>Nothing filed<br><em>yet.</em></h2><p>Your private index starts with the first score.</p><button class="under-button" data-go="rate">DISCOVER A SUBJECT →</button></div>
+      <button id="clearBoard" class="clear-link">CLEAR PRIVATE INDEX</button>
     </section>
 
-    <section id="aboutView" class="view" aria-labelledby="aboutTitle">
-      <span class="eyebrow">MVP NOTES</span><h1 id="aboutTitle">Built for a private opinion.</h1>
-      <div class="about-copy"><p>Velvet Score is a design prototype. Ratings stay on this device and are only visible to you.</p><p>The celebrity catalogue uses adult public figures. Portraits are deliberately editorial stand-ins in this MVP; licensed image sourcing belongs in the catalogue/backend phase.</p><p>“Perceived personality” means your impression of a person’s public persona — not a claim about who they are privately.</p></div>
-      <button class="secondary-button" data-go="rate">Back to Discover</button>
+    <section id="aboutView" class="view about" aria-labelledby="aboutTitle">
+      <div class="folio"><span>ABOUT</span><span>NO PUBLIC FEED</span></div>
+      <h1 id="aboutTitle">A PRIVATE<br><em>POINT OF VIEW.</em></h1>
+      <div class="about-copy"><p>Velvet Score is a personal rating index. Scores are held locally in this browser and are never published.</p><p>The catalogue is restricted to adult public figures. “Perceived personality” records an impression of a person’s public persona, not a claim about their private character.</p><p>This prototype pulls a publicly available editorial image from Wikimedia Commons where possible. Proper catalogue curation, rights review and image licensing belong in the next phase.</p></div>
+      <button class="under-button" data-go="rate">RETURN TO DISCOVER →</button>
     </section>
 
-    <nav class="bottom-nav" aria-label="Main navigation">
-      <button class="nav-item active" data-go="rate"><span class="nav-icon">✦</span><span>Discover</span></button>
-      <button class="nav-item" data-go="board"><span class="nav-icon">▦</span><span>Scoreboard</span></button>
+    <nav class="footer-nav" aria-label="Main navigation">
+      <button class="nav-item active" data-go="rate"><span>01</span> DISCOVER</button>
+      <button class="nav-item" data-go="board"><span>02</span> INDEX</button>
     </nav>
   </main>
   <div class="toast" id="toast" role="status"></div>
