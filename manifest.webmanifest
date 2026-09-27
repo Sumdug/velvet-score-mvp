@@ -1,0 +1,9 @@
+{
+  "name": "Velvet Score",
+  "short_name": "Velvet",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#100b1f",
+  "theme_color": "#100b1f",
+  "description": "A private celebrity-rating prototype."
+}
